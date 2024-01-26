@@ -89,10 +89,7 @@ def main():
             x, y = pygame.mouse.get_pos()
             sand.append(Pixel((x // pixel_scale, y // pixel_scale), color))
 
-        for pxl in sand:
-            pygame.draw.rect(window, pxl.color, (pxl.pos[0] * pixel_scale, pxl.pos[1] * pixel_scale, pixel_scale, pixel_scale))
-
-        for pxl in persistent_sand:
+        for pxl in sand + persistent_sand:
             pygame.draw.rect(window, pxl.color, (pxl.pos[0] * pixel_scale, pxl.pos[1] * pixel_scale, pixel_scale, pixel_scale))
 
         sand_fall(sand, persistent_sand, height, pixel_scale)
