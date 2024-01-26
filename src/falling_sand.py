@@ -7,7 +7,7 @@ import datetime
 from pixel import Pixel
 
 
-def sand_fall(sand, height, pixel_scale):
+def sand_fall(sand, persistent_sand, height, pixel_scale):
     for pxl in sand:
         x, y = pxl.pos
         l_d = x - 1, y + 1  # left down
@@ -15,19 +15,30 @@ def sand_fall(sand, height, pixel_scale):
         r_d = x + 1, y + 1  # right down
 
         if y >= ((height - 1) // pixel_scale):
+            pxl.final = True
             continue
 
-        if s_d not in sand:
+        if s_d not in sand and s_d not in persistent_sand:
             pxl.pos = s_d
 
-        elif l_d not in sand and r_d not in sand:
+        elif l_d not in sand and r_d not in sand and l_d not in persistent_sand and r_d not in persistent_sand:
             pxl.pos = random.choice([l_d, r_d])
 
-        elif l_d not in sand:
+        elif l_d not in sand and l_d not in persistent_sand:
             pxl.pos = l_d
 
-        elif r_d not in sand:
+        elif r_d not in sand and r_d not in persistent_sand:
             pxl.pos = r_d
+
+        elif r_d in sand and s_d in sand and l_d in sand and r_d in persistent_sand and s_d in persistent_sand and l_d in persistent_sand:
+            pxl.final = True
+
+
+def check_persistent(sand:list, persistent_sand:list, pixel_scale, max_height):
+    for pxl in sand:
+        if pxl.final:
+            persistent_sand.append(pxl)
+            sand.remove(pxl)
 
 
 def take_screenshot(window):
@@ -40,6 +51,7 @@ def take_screenshot(window):
 
 def main():
     sand = []
+    persistent_sand = []
 
     pygame.init()
 
@@ -80,7 +92,11 @@ def main():
         for pxl in sand:
             pygame.draw.rect(window, pxl.color, (pxl.pos[0] * pixel_scale, pxl.pos[1] * pixel_scale, pixel_scale, pixel_scale))
 
-        sand_fall(sand, height, pixel_scale)
+        for pxl in persistent_sand:
+            pygame.draw.rect(window, pxl.color, (pxl.pos[0] * pixel_scale, pxl.pos[1] * pixel_scale, pixel_scale, pixel_scale))
+
+        sand_fall(sand, persistent_sand, height, pixel_scale)
+        check_persistent(sand, persistent_sand, pixel_scale, height)
 
         pygame.display.flip()
 

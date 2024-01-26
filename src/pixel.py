@@ -5,6 +5,7 @@ class Pixel:
     def __init__(self, pos, color=None):
         self.pos = pos
         self.color = color
+        self.final = False
         
     def __eq__(self, other):
         if isinstance(other, tuple):
